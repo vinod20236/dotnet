@@ -4,7 +4,8 @@ trigger:
 - main
 
 pool:
-  vmImage: 'windows-latest'
+  name: 'Default'  # Or the name of your custom self-hosted agent pool
+
 
 variables:
   solution: '**/*.sln'
