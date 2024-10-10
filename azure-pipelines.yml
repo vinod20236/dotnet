@@ -1,16 +1,4 @@
-# Universal Windows Platform
-- task: MSBuild@1
-  inputs:
-    solution: 'rosetta.sln'
-    msbuildLocationMethod: 'location'
-    clean: true
-    maximumCpuCount: true
-    restoreNugetPackages: true
-    logProjectEvents: true
-    createLogFile: true
-# Build a Universal Windows Platform project using Visual Studio.
-# Add steps that test and distribute an app, save build artifacts, and more:
-# https://aka.ms/yaml
+# Universal Windows Platform Build Pipeline
 
 trigger:
 - main
@@ -22,7 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'x86|x64|ARM'
   buildConfiguration: 'Release'
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+  appxPackageDir: '$(Build.ArtifactStagingDirectory)\AppxPackages\\'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -33,7 +21,21 @@ steps:
 
 - task: VSBuild@1
   inputs:
-    platform: 'x86'
     solution: '$(solution)'
+    platform: '$(buildPlatform)'  # Using the platform variable here
     configuration: '$(buildConfiguration)'
     msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
+    clean: true
+    maximumCpuCount: true
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(appxPackageDir)'
+    contents: '**'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/AppxPackages'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/AppxPackages'
+    ArtifactName: 'AppxPackages'
+    publishLocation: 'Container'
