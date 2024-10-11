@@ -29,14 +29,3 @@ steps:
     clean: true
     maximumCpuCount: true
 
-- task: CopyFiles@1
-  inputs:
-    sourceFolder: '$(appxPackageDir)'
-    contents: '**'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/AppxPackages'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/AppxPackages'
-    ArtifactName: 'AppxPackages'
-    publishLocation: 'Container'
